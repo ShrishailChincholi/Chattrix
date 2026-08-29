@@ -11,11 +11,13 @@ const postSchema = new mongoose.Schema(
         caption: {
             type: String,
             trim: true,
-            maxlength: 1000
+            maxlength: 1000,
+            default:""
         },
 
         image: {
             type: String,
+            trim:true,
             default: ""
         },
 

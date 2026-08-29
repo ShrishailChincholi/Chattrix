@@ -1,72 +1,35 @@
 <nav class="navbar">
 
-    <a href="/home" class="brand">
-
+     <a href="/home" class="brand">
         <div class="brand-icon">
-            <i class="fa-solid fa-orbit"></i>
+            <!-- Google Material "public" icon (globe) – perfect for social platform -->
+            <img src="https://fonts.gstatic.com/s/i/materialicons/forum/v12/24px.svg" alt="SocialSphere" />
         </div>
-
         <span>SocialSphere</span>
-
     </a>
 
-
     <div class="nav-actions">
-
         <% if (currentUser) { %>
-
-            <a
-                href="/posts/create"
-                class="create-btn"
-            >
+            <a href="/posts/create" class="create-btn">
                 <i class="fa-solid fa-plus"></i>
                 <span>Create</span>
             </a>
 
-
-            <a
-                href="/users/<%= currentUser.username %>"
-                class="nav-profile"
-            >
-
-                <img
-                    src="<%= currentUser.avatar || '/images/default-avatar.png' %>"
+            <a href="/users/<%= currentUser.username %>" class="nav-profile">
+                <img 
+                    src="<%= currentUser.avatar && currentUser.avatar.trim() ? currentUser.avatar : '/images/default-avatar.png' %>" 
                     alt="Profile"
-                >
-
-                <span>
-                    <%= currentUser.username %>
-                </span>
-
+                    onerror="this.src='/images/default-avatar.png'"
+                />
+                <span><%= currentUser.username %></span>
             </a>
 
-
-            <a
-                href="/auth/logout"
-                class="logout-btn"
-                title="Logout"
-            >
+            <a href="/auth/logout" class="logout-btn" title="Logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
             </a>
-
         <% } else { %>
-
-            <a
-                href="/auth/login"
-                class="login-link"
-            >
-                Login
-            </a>
-
-            <a
-                href="/auth/register"
-                class="create-btn"
-            >
-                Join Now
-            </a>
-
+            <a href="/auth/login" class="login-link">Login</a>
+            <a href="/auth/register" class="create-btn">Join Now</a>
         <% } %>
-
     </div>
-
 </nav>

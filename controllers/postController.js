@@ -1,8 +1,92 @@
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
 
+// ============= HELPER FUNCTIONS =============
 
-// HOME PAGE
+// Extract direct image URL from various sources
+function processImageUrl(url) {
+    if (!url) return "";
+    
+    // Handle Bing image search URLs
+    if (url.includes('bing.com/images/search')) {
+        // Try to extract mediaurl parameter
+        const mediaUrlMatch = url.match(/mediaurl=([^&]+)/);
+        if (mediaUrlMatch) {
+            try {
+                const decodedUrl = decodeURIComponent(mediaUrlMatch[1]);
+                // Check if it's a valid image URL
+                if (decodedUrl.match(/\.(jpg|jpeg|png|gif|webp|bmp|svg)/i)) {
+                    return decodedUrl;
+                }
+            } catch (e) {
+                console.error("Failed to decode Bing URL:", e);
+            }
+        }
+        
+        // Try to extract from thid parameter (thumbnail)
+        const thidMatch = url.match(/thid=([^&]+)/);
+        if (thidMatch) {
+            try {
+                const decodedThumb = decodeURIComponent(thidMatch[1]);
+                if (decodedThumb.match(/\.(jpg|jpeg|png|gif)/i)) {
+                    return decodedThumb;
+                }
+            } catch (e) {
+                console.error("Failed to decode Bing thumbnail:", e);
+            }
+        }
+        
+        // If extraction fails, return the original URL
+        return url;
+    }
+    
+    // Handle Google Drive links
+    if (url.includes('drive.google.com')) {
+        let fileId = null;
+        
+        // Pattern: /d/XXXXX/view
+        const match1 = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (match1) fileId = match1[1];
+        
+        // Pattern: id=XXXXX
+        const match2 = url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (match2) fileId = match2[1];
+        
+        // Pattern: /file/d/XXXXX/view
+        const match3 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        if (match3) fileId = match3[1];
+        
+        if (fileId) {
+            return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+        }
+    }
+    
+    // Handle Google Photos
+    if (url.includes('photos.google.com')) {
+        // Google Photos direct link - may not work directly
+        return url;
+    }
+    
+    // Handle Pinterest
+    if (url.includes('pinterest.com')) {
+        // Pinterest links need to be extracted
+        // If it's a direct pinimg.com URL, return as is
+        if (url.includes('pinimg.com')) {
+            return url;
+        }
+        return url;
+    }
+    
+    // Handle Instagram
+    if (url.includes('instagram.com')) {
+        // Instagram links need special handling
+        return url;
+    }
+    
+    return url;
+}
+
+// ============= HOME PAGE =============
 exports.getHome = async (req, res) => {
     try {
         const posts = await Post.find()
@@ -33,61 +117,50 @@ exports.getHome = async (req, res) => {
 
     } catch (error) {
         console.error("Home Error:", error);
-
         res.status(500).send("Server Error");
     }
 };
 
-
-// SHOW CREATE POST PAGE
+// ============= SHOW CREATE POST PAGE =============
 exports.getCreatePost = (req, res) => {
     res.render("posts/create-post", {
         title: "Create Post"
     });
 };
 
-
-// CREATE POST
+// ============= CREATE POST =============
 exports.createPost = async (req, res) => {
     try {
         const { caption, image } = req.body;
 
         if (!caption?.trim() && !image?.trim()) {
-            req.flash(
-                "error",
-                "Please add a caption or image."
-            );
-
+            req.flash("error", "Please add a caption or image.");
             return res.redirect("/posts/create");
+        }
+
+        // Process the image URL to extract direct image
+        let processedImage = image?.trim() || "";
+        if (processedImage) {
+            processedImage = processImageUrl(processedImage);
         }
 
         await Post.create({
             user: req.session.user._id,
             caption: caption?.trim() || "",
-            image: image?.trim() || ""
+            image: processedImage
         });
 
-        req.flash(
-            "success",
-            "Your post has been published!"
-        );
-
+        req.flash("success", "Your post has been published!");
         res.redirect("/home");
 
     } catch (error) {
         console.error("Create Post Error:", error);
-
-        req.flash(
-            "error",
-            "Unable to create post."
-        );
-
+        req.flash("error", "Unable to create post.");
         res.redirect("/posts/create");
     }
 };
 
-
-// POST DETAILS
+// ============= POST DETAILS =============
 exports.getPostDetails = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
@@ -124,14 +197,12 @@ exports.getPostDetails = async (req, res) => {
 
     } catch (error) {
         console.error("Post Details Error:", error);
-
         req.flash("error", "Unable to load post.");
         res.redirect("/home");
     }
 };
 
-
-// SHOW EDIT POST PAGE
+// ============= SHOW EDIT POST PAGE =============
 exports.getEditPost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id).lean();
@@ -145,11 +216,7 @@ exports.getEditPost = async (req, res) => {
             post.user.toString() !==
             req.session.user._id.toString()
         ) {
-            req.flash(
-                "error",
-                "You cannot edit this post."
-            );
-
+            req.flash("error", "You cannot edit this post.");
             return res.redirect("/home");
         }
 
@@ -164,8 +231,7 @@ exports.getEditPost = async (req, res) => {
     }
 };
 
-
-// UPDATE POST
+// ============= UPDATE POST =============
 exports.updatePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -178,26 +244,24 @@ exports.updatePost = async (req, res) => {
             post.user.toString() !==
             req.session.user._id.toString()
         ) {
-            req.flash(
-                "error",
-                "Unauthorized action."
-            );
-
+            req.flash("error", "Unauthorized action.");
             return res.redirect("/home");
         }
 
         const { caption, image } = req.body;
 
         post.caption = caption?.trim() || "";
-        post.image = image?.trim() || "";
+        
+        // Process the image URL to extract direct image
+        let processedImage = image?.trim() || "";
+        if (processedImage) {
+            processedImage = processImageUrl(processedImage);
+        }
+        post.image = processedImage;
 
         await post.save();
 
-        req.flash(
-            "success",
-            "Post updated successfully!"
-        );
-
+        req.flash("success", "Post updated successfully!");
         res.redirect(`/posts/${post._id}`);
 
     } catch (error) {
@@ -206,8 +270,7 @@ exports.updatePost = async (req, res) => {
     }
 };
 
-
-// DELETE POST
+// ============= DELETE POST =============
 exports.deletePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -220,11 +283,7 @@ exports.deletePost = async (req, res) => {
             post.user.toString() !==
             req.session.user._id.toString()
         ) {
-            req.flash(
-                "error",
-                "You cannot delete this post."
-            );
-
+            req.flash("error", "You cannot delete this post.");
             return res.redirect("/home");
         }
 
@@ -234,11 +293,7 @@ exports.deletePost = async (req, res) => {
 
         await Post.findByIdAndDelete(post._id);
 
-        req.flash(
-            "success",
-            "Post deleted successfully."
-        );
-
+        req.flash("success", "Post deleted successfully.");
         res.redirect("/home");
 
     } catch (error) {
@@ -247,8 +302,7 @@ exports.deletePost = async (req, res) => {
     }
 };
 
-
-// LIKE / UNLIKE POST
+// ============= LIKE / UNLIKE POST =============
 exports.toggleLike = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
@@ -281,18 +335,13 @@ exports.toggleLike = async (req, res) => {
     }
 };
 
-
-// ADD COMMENT
+// ============= ADD COMMENT =============
 exports.addComment = async (req, res) => {
     try {
         const { text } = req.body;
 
         if (!text || !text.trim()) {
-            req.flash(
-                "error",
-                "Comment cannot be empty."
-            );
-
+            req.flash("error", "Comment cannot be empty.");
             return res.redirect("back");
         }
 
@@ -316,8 +365,7 @@ exports.addComment = async (req, res) => {
     }
 };
 
-
-// EXPLORE PAGE
+// ============= EXPLORE PAGE =============
 exports.getExplore = async (req, res) => {
     try {
         const posts = await Post.find()
@@ -332,7 +380,6 @@ exports.getExplore = async (req, res) => {
 
     } catch (error) {
         console.error("Explore Error:", error);
-
         res.status(500).send("Server Error");
     }
 };
