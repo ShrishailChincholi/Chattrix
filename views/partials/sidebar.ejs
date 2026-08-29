@@ -1,0 +1,67 @@
+<aside class="sidebar">
+
+    <div class="sidebar-menu">
+
+        <a href="/home" class="menu-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+
+
+        <a
+            href="/posts/explore/all"
+            class="menu-item"
+        >
+            <i class="fa-solid fa-compass"></i>
+            <span>Explore</span>
+        </a>
+
+
+        <% if (currentUser) { %>
+
+            <a
+                href="/posts/create"
+                class="menu-item"
+            >
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Create Post</span>
+            </a>
+
+
+            <a
+                href="/users/<%= currentUser.username %>"
+                class="menu-item"
+            >
+                <i class="fa-solid fa-user"></i>
+                <span>My Profile</span>
+            </a>
+
+        <% } else { %>
+
+            <a
+                href="/auth/login"
+                class="menu-item"
+            >
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Login</span>
+            </a>
+
+        <% } %>
+
+    </div>
+
+
+    <div class="sidebar-card">
+
+        <div class="gradient-dot"></div>
+
+        <h3>Share your world</h3>
+
+        <p>
+            Connect with people, share your stories
+            and build your community.
+        </p>
+
+    </div>
+
+</aside>

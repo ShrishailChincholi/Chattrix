@@ -1,0 +1,179 @@
+<%- include("../partials/header") %>
+<%- include("../partials/navbar") %>
+
+<div class="layout">
+
+    <%- include("../partials/sidebar") %>
+
+    <main class="main-content">
+
+        <% if (success && success.length > 0) { %>
+            <div class="alert success-alert">
+                <%= success[0] %>
+            </div>
+        <% } %>
+
+
+        <% if (error && error.length > 0) { %>
+            <div class="alert error-alert">
+                <%= error[0] %>
+            </div>
+        <% } %>
+
+
+        <section class="profile-header">
+
+            <div class="profile-main">
+
+                <img
+                    class="profile-avatar"
+                    src="<%= user.avatar || '/images/default-avatar.png' %>"
+                    alt="<%= user.username %>"
+                >
+
+
+                <div class="profile-info">
+
+                    <p class="eyebrow">
+                        CREATOR PROFILE
+                    </p>
+
+                    <h1>
+                        @<%= user.username %>
+                    </h1>
+
+                    <p class="profile-bio">
+                        <%= user.bio || "No bio added yet." %>
+                    </p>
+
+
+                    <div class="profile-stats">
+
+                        <div>
+
+                            <strong>
+                                <%= posts.length %>
+                            </strong>
+
+                            <span>Posts</span>
+
+                        </div>
+
+
+                        <a
+                            href="/users/<%= user.username %>/followers"
+                        >
+
+                            <strong>
+                                <%= followersCount %>
+                            </strong>
+
+                            <span>Followers</span>
+
+                        </a>
+
+
+                        <a
+                            href="/users/<%= user.username %>/following"
+                        >
+
+                            <strong>
+                                <%= followingCount %>
+                            </strong>
+
+                            <span>Following</span>
+
+                        </a>
+
+                    </div>
+
+
+                    <% if (isOwnProfile) { %>
+
+                        <a
+                            href="/users/<%= user.username %>/edit"
+                            class="edit-profile-btn"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                            Edit Profile
+                        </a>
+
+                    <% } else if (currentUser) { %>
+
+                        <form
+                            action="/follow/<%= user._id %>"
+                            method="POST"
+                        >
+
+                            <button
+                                type="submit"
+                                class="follow-btn"
+                            >
+                                <%= isFollowing ? "Unfollow" : "Follow" %>
+                            </button>
+
+                        </form>
+
+                    <% } %>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="section-heading">
+
+            <div>
+                <p class="eyebrow">CONTENT</p>
+                <h2>Posts</h2>
+            </div>
+
+        </div>
+
+
+        <div class="profile-post-grid">
+
+            <% if (posts.length === 0) { %>
+
+                <div class="empty-state">
+                    <p>No posts yet.</p>
+                </div>
+
+            <% } %>
+
+
+            <% posts.forEach(post => { %>
+
+                <a
+                    href="/posts/<%= post._id %>"
+                    class="profile-post"
+                >
+
+                    <% if (post.image) { %>
+
+                        <img
+                            src="<%= post.image %>"
+                            alt="Post"
+                        >
+
+                    <% } else { %>
+
+                        <div class="text-post">
+                            <%= post.caption %>
+                        </div>
+
+                    <% } %>
+
+                </a>
+
+            <% }) %>
+
+        </div>
+
+    </main>
+
+</div>
+
+<%- include("../partials/footer") %>

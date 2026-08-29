@@ -1,0 +1,61 @@
+<%- include("partials/header") %>
+<%- include("partials/navbar") %>
+
+<section class="landing-page">
+
+    <div class="landing-content">
+
+        <div class="landing-badge">
+            <i class="fa-solid fa-sparkles"></i>
+            THE SOCIAL EXPERIENCE
+        </div>
+
+        <h1>
+            Share moments.
+            <span>Build connections.</span>
+        </h1>
+
+        <p>
+            SocialSphere is your modern space to share
+            stories, discover people and connect with
+            a growing community.
+        </p>
+
+        <div class="landing-buttons">
+
+            <% if (currentUser) { %>
+
+                <a
+                    href="/home"
+                    class="hero-create-btn"
+                >
+                    Go to Feed
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            <% } else { %>
+
+                <a
+                    href="/auth/register"
+                    class="hero-create-btn"
+                >
+                    Join SocialSphere
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a
+                    href="/auth/login"
+                    class="outline-btn"
+                >
+                    Login
+                </a>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</section>
+
+<%- include("partials/footer") %>

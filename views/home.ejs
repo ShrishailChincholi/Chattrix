@@ -1,0 +1,254 @@
+<%- include("partials/header") %>
+<%- include("partials/navbar") %>
+
+<div class="layout">
+
+    <%- include("partials/sidebar") %>
+
+    <main class="main-content">
+
+        <% if (success && success.length > 0) { %>
+            <div class="alert success-alert">
+                <%= success[0] %>
+            </div>
+        <% } %>
+
+
+        <% if (error && error.length > 0) { %>
+            <div class="alert error-alert">
+                <%= error[0] %>
+            </div>
+        <% } %>
+
+
+        <section class="hero">
+
+            <div>
+
+                <span class="hero-tag">
+                    <i class="fa-solid fa-sparkles"></i>
+                    COMMUNITY FEED
+                </span>
+
+                <h1>
+                    Your world.
+                    <span>Your story.</span>
+                </h1>
+
+                <p>
+                    Discover ideas, share your moments
+                    and connect with amazing people.
+                </p>
+
+            </div>
+
+
+            <% if (currentUser) { %>
+
+                <a
+                    href="/posts/create"
+                    class="hero-create-btn"
+                >
+                    Share something
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            <% } %>
+
+        </section>
+
+
+        <div class="section-heading">
+
+            <div>
+                <p class="eyebrow">LATEST STORIES</p>
+                <h2>Community Feed</h2>
+            </div>
+
+            <a href="/posts/explore/all">
+                Explore
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+
+        <section class="feed">
+
+            <% if (posts.length === 0) { %>
+
+                <div class="empty-state">
+
+                    <i class="fa-solid fa-images"></i>
+
+                    <h2>No posts yet</h2>
+
+                    <p>
+                        Be the first to share something
+                        with the community.
+                    </p>
+
+                </div>
+
+            <% } %>
+
+
+            <% posts.forEach(post => { %>
+
+                <article class="post-card">
+
+                    <div class="post-header">
+
+                        <a
+                            href="/users/<%= post.user.username %>"
+                            class="post-user"
+                        >
+
+                            <img
+                                src="<%= post.user.avatar || '/images/default-avatar.png' %>"
+                                alt="Avatar"
+                            >
+
+                            <div>
+
+                                <strong>
+                                    <%= post.user.username %>
+                                </strong>
+
+                                <span>
+                                    <%= new Date(post.createdAt).toLocaleDateString() %>
+                                </span>
+
+                            </div>
+
+                        </a>
+
+
+                        <% if (
+                            currentUser &&
+                            currentUser._id.toString() ===
+                            post.user._id.toString()
+                        ) { %>
+
+                            <div class="post-owner-actions">
+
+                                <a
+                                    href="/posts/<%= post._id %>/edit"
+                                    class="small-icon-btn"
+                                >
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+
+                                <form
+                                    action="/posts/<%= post._id %>/delete"
+                                    method="POST"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="small-icon-btn delete-btn"
+                                        onclick="return confirm('Delete this post?')"
+                                    >
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        <% } %>
+
+                    </div>
+
+
+                    <% if (post.caption) { %>
+
+                        <p class="post-caption">
+                            <%= post.caption %>
+                        </p>
+
+                    <% } %>
+
+
+                    <% if (post.image) { %>
+
+                        <a href="/posts/<%= post._id %>">
+
+                            <img
+                                class="post-image"
+                                src="<%= post.image %>"
+                                alt="Post image"
+                            >
+
+                        </a>
+
+                    <% } %>
+
+
+                    <div class="post-actions">
+
+                        <% if (currentUser) { %>
+
+                            <form
+                                action="/posts/<%= post._id %>/like"
+                                method="POST"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="action-btn <%= post.isLiked ? 'liked' : '' %>"
+                                >
+
+                                    <i class="fa-heart <%= post.isLiked ? 'fa-solid' : 'fa-regular' %>"></i>
+
+                                    <span>
+                                        <%= post.likes.length %>
+                                        Likes
+                                    </span>
+
+                                </button>
+
+                            </form>
+
+                        <% } else { %>
+
+                            <a
+                                href="/auth/login"
+                                class="action-btn"
+                            >
+                                <i class="fa-regular fa-heart"></i>
+
+                                <span>
+                                    <%= post.likes.length %> Likes
+                                </span>
+                            </a>
+
+                        <% } %>
+
+
+                        <a
+                            href="/posts/<%= post._id %>"
+                            class="action-btn"
+                        >
+                            <i class="fa-regular fa-comment"></i>
+
+                            <span>
+                                <%= post.commentCount %>
+                                Comments
+                            </span>
+                        </a>
+
+                    </div>
+
+                </article>
+
+            <% }) %>
+
+        </section>
+
+    </main>
+
+</div>
+
+<%- include("partials/footer") %>

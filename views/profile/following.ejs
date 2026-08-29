@@ -1,0 +1,72 @@
+<%- include("../partials/header") %>
+<%- include("../partials/navbar") %>
+
+<div class="layout">
+
+    <%- include("../partials/sidebar") %>
+
+    <main class="main-content">
+
+        <div class="page-title">
+
+            <p class="eyebrow">COMMUNITY</p>
+
+            <h1>
+                @<%= profileUser.username %> is following
+            </h1>
+
+        </div>
+
+
+        <div class="user-list">
+
+            <% if (users.length === 0) { %>
+
+                <div class="empty-state">
+
+                    <i class="fa-solid fa-user-group"></i>
+
+                    <h2>Not following anyone yet</h2>
+
+                </div>
+
+            <% } %>
+
+
+            <% users.forEach(user => { %>
+
+                <a
+                    href="/users/<%= user.username %>"
+                    class="user-list-card"
+                >
+
+                    <img
+                        src="<%= user.avatar || '/images/default-avatar.png' %>"
+                        alt="Avatar"
+                    >
+
+                    <div>
+
+                        <h3>
+                            @<%= user.username %>
+                        </h3>
+
+                        <p>
+                            <%= user.bio || "SocialSphere member" %>
+                        </p>
+
+                    </div>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+            <% }) %>
+
+        </div>
+
+    </main>
+
+</div>
+
+<%- include("../partials/footer") %>

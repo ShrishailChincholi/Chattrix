@@ -1,0 +1,91 @@
+<%- include("partials/header") %>
+<%- include("partials/navbar") %>
+
+<div class="layout">
+
+    <%- include("partials/sidebar") %>
+
+    <main class="main-content">
+
+        <div class="page-title">
+
+            <p class="eyebrow">DISCOVER</p>
+
+            <h1>Explore the community</h1>
+
+            <p>
+                Discover posts and stories from
+                SocialSphere users.
+            </p>
+
+        </div>
+
+
+        <div class="explore-grid">
+
+            <% if (posts.length === 0) { %>
+
+                <div class="empty-state">
+
+                    <i class="fa-solid fa-compass"></i>
+
+                    <h2>Nothing to explore yet</h2>
+
+                </div>
+
+            <% } %>
+
+
+            <% posts.forEach(post => { %>
+
+                <a
+                    href="/posts/<%= post._id %>"
+                    class="explore-card"
+                >
+
+                    <% if (post.image) { %>
+
+                        <img
+                            src="<%= post.image %>"
+                            alt="Post"
+                        >
+
+                    <% } else { %>
+
+                        <div class="explore-no-image">
+
+                            <i class="fa-solid fa-quote-left"></i>
+
+                            <p>
+                                <%= post.caption %>
+                            </p>
+
+                        </div>
+
+                    <% } %>
+
+
+                    <div class="explore-overlay">
+
+                        <div>
+                            <i class="fa-solid fa-heart"></i>
+                            <%= post.likes.length %>
+                        </div>
+
+                        <span>
+                            @<%= post.user.username %>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            <% }) %>
+
+        </div>
+
+    </main>
+
+</div>
+
+<%- include("partials/footer") %>

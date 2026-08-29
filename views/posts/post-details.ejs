@@ -1,0 +1,192 @@
+<%- include("../partials/header") %>
+<%- include("../partials/navbar") %>
+
+<div class="layout">
+
+    <%- include("../partials/sidebar") %>
+
+    <main class="main-content">
+
+        <% if (error && error.length > 0) { %>
+            <div class="alert error-alert">
+                <%= error[0] %>
+            </div>
+        <% } %>
+
+
+        <article class="post-card details-card">
+
+            <div class="post-header">
+
+                <a
+                    href="/users/<%= post.user.username %>"
+                    class="post-user"
+                >
+
+                    <img
+                        src="<%= post.user.avatar || '/images/default-avatar.png' %>"
+                        alt="Avatar"
+                    >
+
+                    <div>
+
+                        <strong>
+                            <%= post.user.username %>
+                        </strong>
+
+                        <span>
+                            <%= new Date(post.createdAt).toLocaleString() %>
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+            <% if (post.caption) { %>
+
+                <p class="post-caption">
+                    <%= post.caption %>
+                </p>
+
+            <% } %>
+
+
+            <% if (post.image) { %>
+
+                <img
+                    class="post-image"
+                    src="<%= post.image %>"
+                    alt="Post image"
+                >
+
+            <% } %>
+
+
+            <div class="post-actions">
+
+                <% if (currentUser) { %>
+
+                    <form
+                        action="/posts/<%= post._id %>/like"
+                        method="POST"
+                    >
+
+                        <button
+                            class="action-btn <%= post.isLiked ? 'liked' : '' %>"
+                        >
+
+                            <i class="fa-heart <%= post.isLiked ? 'fa-solid' : 'fa-regular' %>"></i>
+
+                            <span>
+                                <%= post.likes.length %> Likes
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                <% } %>
+
+            </div>
+
+        </article>
+
+
+        <section class="comments-section">
+
+            <h2>
+                <i class="fa-regular fa-comments"></i>
+                Comments
+                <span>(<%= comments.length %>)</span>
+            </h2>
+
+
+            <% if (currentUser) { %>
+
+                <form
+                    action="/posts/<%= post._id %>/comment"
+                    method="POST"
+                    class="comment-form"
+                >
+
+                    <input
+                        type="text"
+                        name="text"
+                        placeholder="Write a comment..."
+                        required
+                        maxlength="500"
+                    >
+
+                    <button type="submit">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+
+                </form>
+
+            <% } else { %>
+
+                <p class="login-comment-message">
+
+                    <a href="/auth/login">
+                        Login
+                    </a>
+
+                    to join the conversation.
+
+                </p>
+
+            <% } %>
+
+
+            <div class="comments-list">
+
+                <% if (comments.length === 0) { %>
+
+                    <p class="no-comments">
+                        No comments yet. Start the conversation!
+                    </p>
+
+                <% } %>
+
+
+                <% comments.forEach(comment => { %>
+
+                    <div class="comment">
+
+                        <img
+                            src="<%= comment.user.avatar || '/images/default-avatar.png' %>"
+                            alt="Avatar"
+                        >
+
+                        <div class="comment-content">
+
+                            <strong>
+                                <%= comment.user.username %>
+                            </strong>
+
+                            <p>
+                                <%= comment.text %>
+                            </p>
+
+                            <small>
+                                <%= new Date(comment.createdAt).toLocaleString() %>
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<%- include("../partials/footer") %>
