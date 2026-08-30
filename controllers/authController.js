@@ -157,3 +157,5 @@ exports.logoutUser = (req, res) => {
         res.redirect("/auth/login");
     });
 };
+
+
