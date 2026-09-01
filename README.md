@@ -10,7 +10,7 @@ Chattrix is a modern and responsive social networking platform where users can c
 
 https://chattrix-588q.onrender.com
 
-> Replace the above link with your actual Render deployment URL if it is different.
+
 
 ---
 
