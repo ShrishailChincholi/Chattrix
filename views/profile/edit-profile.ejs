@@ -1,86 +1,89 @@
 <%- include("../partials/header") %>
+
 <%- include("../partials/navbar") %>
 
 <div class="layout">
 
+```
+<%- include("../partials/sidebar") %>
 
-    <%- include("../partials/sidebar") %>
+<main class="main-content">
 
-    <main class="main-content">
+    <div class="page-title">
+        <p class="eyebrow">PROFILE & PERSONALIZATION</p>
+        <h1>Make your profile yours ✨</h1>
+        <p>
+            Personalize your profile and let the SocialSphere community
+            know a little more about you.
+        </p>
+    </div>
 
-        <div class="page-title">
+    <form
+        action="/users/<%= user.username %>/edit"
+        method="POST"
+        class="create-post-form"
+    >
 
-            <p class="eyebrow">PROFILE SETTINGS</p>
+        <div class="profile-preview">
+            <img
+                src="<%= user.avatar || '/images/default-avatar.png' %>"
+                alt="Profile picture"
+            >
 
-            <h1>Edit your profile</h1>
-
-            <p>
-                Update how the SocialSphere community sees you.
-            </p>
-
+            <div>
+                <strong>@<%= user.username %></strong>
+                <p>Your SocialSphere profile</p>
+            </div>
         </div>
 
+        <div class="form-group">
+            <label>
+                <i class="fa-solid fa-user-pen"></i>
+                About You
+            </label>
 
-        <form
-            action="/users/<%= user.username %>/edit"
-            method="POST"
-            class="create-post-form"
-        >
+            <textarea
+                name="bio"
+                maxlength="300"
+                placeholder="Share something interesting about yourself..."
+            ><%= user.bio || "" %></textarea>
 
-            <div class="profile-preview">
+            <small>
+                Introduce yourself in a few words. Maximum 300 characters.
+            </small>
+        </div>
 
-                <img
-                    src="<%= user.avatar || '/images/default-avatar.png' %>"
-                    alt="Profile"
-                >
+        <div class="form-group">
+            <label>
+                <i class="fa-solid fa-image"></i>
+                Profile Picture
+            </label>
 
-                <div>
-                    <strong>
-                        @<%= user.username %>
-                    </strong>
-
-                    <p>SocialSphere Member</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Bio</label>
-
-                <textarea
-                    name="bio"
-                    maxlength="300"
-                    placeholder="Tell people about yourself..."
-                ><%= user.bio || "" %></textarea>
-
-            </div>
-            <div class="form-group">
-
-                <label>Profile Image URL</label>
-
-                <input
-                    type="url"
-                    name="avatar"
-                    value="<%= user.avatar || "" %>"
-                    placeholder="https://example.com/profile.jpg"
-                >
-
-            </div>
-            <button
-                type="submit"
-                class="publish-btn"
+            <input
+                type="url"
+                name="avatar"
+                value="<%= user.avatar || "" %>"
+                placeholder="Paste your profile image URL..."
             >
-                <i class="fa-solid fa-floppy-disk"></i>
-                Save Changes
-            </button>
 
-        </form>
+            <small>
+                Use a clear image URL to personalize your profile.
+            </small>
+        </div>
 
-    </main>
+        <button
+            type="submit"
+            class="publish-btn"
+        >
+            <i class="fa-solid fa-check"></i>
+            Update Profile
+        </button>
+
+    </form>
+
+</main>
+```
 
 </div>
-
 
 <%- include("../partials/footer") %>
